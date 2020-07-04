@@ -1,0 +1,162 @@
+{% extends 'layout1.html' %} {% block title %} Diary {% endblock title %} {% block content %}
+<style>
+    .border-warning {
+        border-radius: 100px;
+    }
+    
+    input {
+        overflow: auto;
+        width: -webkit-fill-available;
+    }
+    
+    #diary {
+        padding-top: 4.5px;
+        padding-bottom: 5px;
+    }
+    
+    #del {
+        width: 80px;
+    }
+    
+    .bg {
+        background-image: url('static/image/notebookbg.jpg');
+    }
+</style>
+<div class="container">
+    <div class="jumbotron mt-5 border border-warning ">
+        <div class="container">
+            <h1 class="display-4 font-weight-bolder text-warning ">My Diary</h1>
+            <p class="lead text-warning ">Hello!, Please speak what you wanna save.</p>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="jumbotron mt-5 border border-warning ">
+        <div class="container">
+            <h4 class=" font-weight-bolder text-warning ">You May Also Write Here...</h4>
+            <form action="/diary" method="POST"> {% csrf_token %}
+                <input type="text" name="text">
+                <button type="submit" class="mt-2 btn btn-outline-warning"> Save </button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="jumbotron mt-5 border border-warning ">
+        <div class="container">
+            <h4 class=" font-weight-bolder text-warning ">Your Previously saved stories...</h4>
+            <ul id="50">
+
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock content %} {% block js %}
+<style>
+    .badge {
+        float: right;
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        console.log("starting");
+        $.ajax({
+            type: 'POST',
+            URL: '/notebook',
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                respons: 0,
+            },
+            encode: true,
+        }).done(function(text) {
+            text = JSON.parse(text)
+            for (i in text['txt']) {
+                txt = text['txt'][i][0]
+                date = text['txt'][i][1]
+                id = text['txt'][i][2]
+                var a = ""
+                a = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="col-9" >${txt}</div>
+                    <div class="align-right" >
+                        <button class="badge badge-danger badge-pill mx-1 my-1" id="del" onclick="{delete_(${id})}" >delete</button>
+                        <span class="badge badge-primary badge-pill mx-1 my-1" id="diary">${date}</span>
+                    </div>
+                </li>`
+                $('#50').append(a)
+            }
+            $.ajax({
+                type: 'POST',
+                URL: '/notebook',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    respons: 1,
+                },
+                encode: true,
+                success: function(text) {
+                    $.ajax({
+                        type: 'POST',
+                        URL: '/notebook',
+                        data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            respons: 0,
+                        },
+                        encode: true,
+                    }).done(function(text) {
+                        console.log(text)
+                        text = JSON.parse(text)
+                        $('#50').empty()
+                        for (i in text['txt']) {
+                            txt = text['txt'][i][0]
+                            date = text['txt'][i][1]
+                            id = text['txt'][i][2]
+                            var a = ""
+                            a = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="col-9">
+                                    ${txt}
+                                </div>
+                            <div class="align-right" >
+                                <button class="badge badge-danger badge-pill mx-1 my-1 " id="del" onclick="{delete_(${id})}" >delete</button>
+                                <span class="badge badge-primary badge-pill mx-1 my-1" id="diary" >${date}</span>
+                            </div>
+                            </li>`
+                            $('#50').append(a)
+                        }
+                    })
+                }
+            })
+        })
+    })
+
+    function delete_(_id) {
+        console.log('in');
+        $.ajax({
+            type: "GET",
+            URL: '/delete',
+            data: {
+                del: 1,
+                id_: _id,
+            },
+            encode: true,
+        }).done((text) => {
+            text = JSON.parse(text)
+            $('#50').empty()
+            for (i in text['txt']) {
+                txt = text['txt'][i][0]
+                date = text['txt'][i][1]
+                id = text['txt'][i][2]
+                var a = ""
+                a = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="col-9">
+                        ${txt}
+                    </div>
+                    <div class="align-right" >
+                        <button class="badge badge-danger badge-pill mx-1 my-1 " id="del" onclick="{delete_(${id})}" >delete</button>
+                        <span class="badge badge-primary badge-pill mx-1 my-1 mt-1" id="diary" >${date}</span>
+                    </div>
+                    </li>`
+                $('#50').append(a)
+            }
+        })
+    }
+</script>
+{% endblock js %}

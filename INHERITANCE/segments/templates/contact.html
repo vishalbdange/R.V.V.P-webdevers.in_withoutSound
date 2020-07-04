@@ -1,0 +1,49 @@
+{% extends 'layout.html' %} {% block content %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<div class="container my-4">
+    <style>
+        .bg {
+            background-image: url('static/image/bg6.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .ml-xl-5 img {
+            width: 80%;
+            margin-left: 10%;
+        }
+    </style>
+    {% load static %} {% if messages %} {% for msg in messages %}
+    <div class="alert alert-primary mb-0 mx-1" id="msg" role="alert">
+        {{msg}}
+    </div> {% endfor %} {% endif %}
+    <div class="ml-xl-5">
+        <img src="{% static '/contact.jpg' %}" style="border: 4px solid red " class="my-3" alt="..."> {% endblock content %} {% block js %}
+    </div>
+    <form method="POST" action="/contact"> {% csrf_token %}
+        <div class="form-row mt-3">
+            <div class="form-group col-md-6">
+                <label for="inputPassword4" class="text-danger">Name</label>
+                <input type="text" name="name" class="form-control" id="inputPassword4">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputEmail4" class="text-danger">Email</label>
+                <input type="email" name="email" class="form-control" id="inputEmail4">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputAddress2" class="text-danger">Enter Your Message Here</label>
+            <textarea type="text" name="text" class="form-control" id="inputAddress2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Submit</button>
+    </form>
+
+</div>
+<script>
+    setTimeout(function() {
+        if ($('#msg').length > 0) {
+            $('#msg').remove();
+        }
+    }, 4000)
+</script>
+{% endblock js %}
