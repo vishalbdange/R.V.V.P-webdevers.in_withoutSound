@@ -5,18 +5,14 @@ from django.conf.urls import handler400, handler403, handler404, handler500
 
 urlpatterns=[
     path("", views.home, name="home"),
-    path("auxiliary_home", views.auxiliary_home, name="auxiliary_home"),
     path("login", views.login_, name="login_"),
-    path("auxiliary_login_", views.auxiliary_login_, name="auxiliary_login_"),
     path("login_page", views.login_page, name="login_page"),
     path("register", views.register, name="register"),
     path("about", views.about, name="about"),
     path("contact", views.contact, name="contact"),
     path("logout", views.logout, name="logout"),
     path("news", views.news, name="news"),
-    path("News_", views.News, name="News"),
     path("notebook", views.notebook, name="notebook"),
-    path("notebook_", views.auxiliary_notebook, name="auxiliary_notebook"),
     path("diary", views.diary, name="diary"),
     path("songs", views.songs, name="songs"),
     path("arijit", views.arijit, name="arijit"),

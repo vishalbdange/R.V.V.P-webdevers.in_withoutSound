@@ -23,6 +23,27 @@
         border: 2px solid red;
         border-radius: 20px;
     }
+    
+    #temp {
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #bor {
+        border-radius: 4px;
+        border: 2px solid red
+    }
+    
+    .button {
+        flex: 1;
+        flex-direction: row;
+        justify-self: center;
+    }
+    
+    .text-align-center {
+        text-align: center;
+    }
 </style>
 <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"> {% load static %}
 <div class="container container1">
@@ -30,6 +51,7 @@
         <h1 class="text-danger">Latest News</h1>
     </div>
 </div>
+
 <div class="container container2">
 
 </div>
@@ -73,63 +95,97 @@
                 }
             }
             $.ajax({
+                type: "GET",
+                URL: '/news',
+                data: {
+                    'response': 1
+                },
+                encode: true,
+            }).done(
+                (text) => {
+                    var b = `<div id="temp" class="container">
+                            <div class="text-align-center">
+                                <h3 class="bg-light text-danger border-danger my-3" id="bor">The News is Further Sorted Into Three Categories as Follows, Choose one of them or Exit</h3>
+                            </div>
+                            <div class="button" class="container my-2 mb-5">
+                                <button class="btn btn-primary col-2 mx-2" onclick="{ sortedNews('entertainment') }">Entertainment</button>
+                                <button class="btn btn-warning col-2 mx-2" onclick="{ sortedNews('business') }">Business</button>
+                                <button class="btn btn-success col-2 mx-2" onclick="{ sortedNews('sports') }">Sports</button>
+                                <button class="btn btn-danger col-2 mx-2" onclick="{ sortedNews('exit') }">Exit</button>
+                            </div>
+                        </div>`
+                    $('.container2').append(b)
+                })
+        })
+
+
+    })
+    const sortedNews = option => {
+        if (option === "exit") {
+            document.getElementById("temp").innerHTML = ""
+        } else {
+            document.getElementById("temp").innerHTML = ""
+            $.ajax({
                 type: 'GET',
                 URL: '/news',
                 data: {
-                    'response': 1,
+                    response: 0,
+                    option: option
                 },
                 encode: true,
                 success: function(text) {
-                    $.ajax({
-                        type: 'GET',
-                        URL: '/news',
-                        data: {
-                            response: 0,
-                        },
-                        encode: true,
-                        success: function(text) {
-                            console.log(text);
-                            txt = JSON.parse(text)
-                            let z = 1
-                            var a = `
-                                <div class="text-center bg-primary" id="bg">
-                                    <h1 class="text-danger">Sorted News</h1>
-                                </div>
-                                `
-                            $('.container2').append(a);
-                            a = `
-                            <div class="row" id = "11">
+                    console.log(text);
+                    txt = JSON.parse(text)
+                    let z = 1
+                    var a = `
+                            <div class="text-center bg-primary" id="bg">
+                                <h1 class="text-danger">Sorted News</h1>
                             </div>
                             `
-                            $('.container2').append(a);
-                            for (i in txt) {
-                                a = ""
-                                a = `
-                                    <div class = "column col-3">  
-                                        <div id="50" class=" text-danger" height = "100px">
-                                            <div class="card car my-3">
-                                                <img src="{% static '/news_pg2.jpg' %}" class="card-img-top" height="250px" alt="...">
-                                                <div class="card-body">
-                                                    <p class="card-text" id="50">${txt[i]}</p>
-                                                </div>
+                    $('.container2').append(a);
+                    a = `
+                        <div class="row" id = "11">
+                        </div>
+                        `
+                    $('.container2').append(a);
+                    for (i in txt) {
+                        a = ""
+                        a = `
+                                <div class = "column col-3">  
+                                    <div id="50" class=" text-danger" height = "100px">
+                                        <div class="card car my-3">
+                                            <img src="{% static '/news_pg2.jpg' %}" class="card-img-top" height="250px" alt="...">
+                                            <div class="card-body">
+                                                <p class="card-text" id="50">${txt[i]}</p>
                                             </div>
                                         </div>
                                     </div>
-                                `
-                                $(`#1${z}`).append(a)
-                                if ((i + 1) % 4 == 0) {
-                                    z += 1
-                                    a = `<div class="row" id = "1${z}">
-                            </div>`
-                                    $('.container2').append(a);
-                                }
-                            }
+                                </div>
+                            `
+                        $(`#1${z}`).append(a)
+                        if ((i + 1) % 4 == 0) {
+                            z += 1
+                            a = `<div class="row" id = "1${z}">
+                        </div>`
+                            $('.container2').append(a);
                         }
-                    })
+                    }
+                    var b = `<div id="temp" class="container">
+                            <div class="text-align-center">
+                                <h3 class="bg-light text-danger border-danger my-3" id="bor">The News is Further Sorted Into Three Categories as Follows, Choose one of them or Exit</h3>
+                            </div>
+                            <div class="button" class="container my-2 mb-5">
+                                <button class="btn btn-primary col-2 mx-2" onclick="{ sortedNews('entertainment') }">Entertainment</button>
+                                <button class="btn btn-warning col-2 mx-2" onclick="{ sortedNews('business') }">Business</button>
+                                <button class="btn btn-success col-2 mx-2" onclick="{ sortedNews('sports') }">Sports</button>
+                                <button class="btn btn-danger col-2 mx-2" onclick="{ sortedNews('exit') }">Exit</button>
+                            </div>
+                        </div>`
+                    $('.container2').append(b)
                 }
             })
-        })
-    })
+        }
+    }
 </script>
 
 {% endblock js %}

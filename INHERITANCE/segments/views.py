@@ -149,55 +149,6 @@ def logout(request):
     return redirect("home")
 
 
-def News(request):
-    r = sr.Recognizer()
-    with  sr.Microphone() as source:
-        playsound.playsound("listening.mp3")
-        print("Listening......")
-        r.pause_threshold = 1
-        sr.Recognizer().energy_threshold = 1500
-        r.energy_threshold = 1500
-        audio = r.listen(source)
-        print('done')
-        playsound.playsound("done.mp3")
-    try:
-        query = r.recognize_google(audio, language = 'en-in')
-        if "business" in query:
-            url_ = "http://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=619d592e3df744d7afc8d8492e0de271"
-        elif 'entertainment' in query:
-            url_ = "http://newsapi.org/v2/top-headlines?country=in&category=entertainment&apiKey=619d592e3df744d7afc8d8492e0de271"
-        elif ('sport' in query.lower()) or ('sports' in query.lower()):
-            url_ = "http://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=619d592e3df744d7afc8d8492e0de271"
-        else:
-            print(query)
-            return HttpResponse(json.dumps(["Thank You..."])) 
-    except Exception as e:
-        global rr
-        rr += 1
-        playsound.playsound("sayagain.mp3")
-        if rr<3:
-            return redirect("News")
-        else:
-            rr=0
-            playsound.playsound("conprob.mp3")
-            return HttpResponse(json.dumps(["Thank You..."]))
-    rr=0
-    news = requests.get(url_).text
-    news = json.loads(news)
-    articles = news['articles']
-    arts = []
-    for article in articles:
-        arts.append(article['title'])
-        tts=gTTS(text=article['title'], lang='en')
-        filename='voice.mp3'
-        tts.save(filename)
-        playsound.playsound(filename)
-        os.remove(filename)
-        print(article['title'])
-    art = json.dumps(arts)
-    return HttpResponse(art)
-
-
 def news(request):
     if os.path.exists("voice.mp3"):
         os.remove("voice.mp3")
@@ -232,54 +183,30 @@ def news(request):
                 art = json.dumps(arts)
                 return HttpResponse(art)
             elif response == '0':
-                playsound.playsound("newscat.mp3")
-                r = sr.Recognizer()
-                with  sr.Microphone() as source:
-                    playsound.playsound("listening.mp3")
-                    print("Listening......")
-                    r.pause_threshold = 1
-                    sr.Recognizer().energy_threshold = 1500
-                    r.energy_threshold = 1500
-                    audio = r.listen(source)
-                    print('done')
-                    playsound.playsound("done.mp3")
-                    
-                try:
-                    query = r.recognize_google(audio, language = 'en-in')
-                    if "business" in query.lower():
-                        url_ = "http://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=619d592e3df744d7afc8d8492e0de271"
-                    elif 'entertainment' in query.lower():
-                        url_ = "http://newsapi.org/v2/top-headlines?country=in&category=entertainment&apiKey=619d592e3df744d7afc8d8492e0de271"
-                    elif ('sport' in query.lower()) or ('sports' in query.lower()) :
-                        url_ = "http://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=619d592e3df744d7afc8d8492e0de271"
-                    else:
-                        print(query)
-                        return redirect("News") 
-                except Exception as e:
-                    global rr
-                    rr += 1
-                    playsound.playsound("sayagain.mp3")
-                    if rr<3:
-                        return redirect("News")
-                    else:
-                        playsound.playsound("conprob.mp3")
-                        return HttpResponse(json.dumps(["Thank You..."]))
-
-                rr=0
-                news = requests.get(url_).text
-                news = json.loads(news)
-                articles = news['articles']
-                arts = []
-                for article in articles:
-                    arts.append(article['title'])
-                    tts=gTTS(text=article['title'], lang='en')
-                    filename='voice.mp3'
-                    tts.save(filename)
-                    playsound.playsound(filename)
-                    os.remove(filename)
-                    print(article['title'])
-                art = json.dumps(arts)
-                return HttpResponse(art)
+                option = request.GET.get('option')
+                if option=="business":
+                    url_ = "http://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=619d592e3df744d7afc8d8492e0de271"
+                elif option=='entertainment':
+                    url_ = "http://newsapi.org/v2/top-headlines?country=in&category=entertainment&apiKey=619d592e3df744d7afc8d8492e0de271"
+                elif option=='sports':
+                    url_ = "http://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=619d592e3df744d7afc8d8492e0de271"
+                if url_:
+                    rr=0
+                    news = requests.get(url_).text
+                    news = json.loads(news)
+                    articles = news['articles']
+                    arts = []
+                    for article in articles:
+                        arts.append(article['title'])
+                        tts=gTTS(text=article['title'], lang='en')
+                        filename='voice.mp3'
+                        tts.save(filename)
+                        playsound.playsound(filename)
+                        os.remove(filename)
+                        print(article['title'])
+                    art = json.dumps(arts)
+                    return HttpResponse(art)
+                return HttpResponse("")
         return render(request, "news.html")
     return redirect("home")
 
@@ -314,51 +241,7 @@ def notebook(request):
             txt = json.dumps({'txt':_dict_})  
             return HttpResponse(txt)
         if request.method == 'POST':
-            if (aa+1)%3 == 0:
-                aa += 1
-                id = request.user.id
-                desc = request.POST.get('text', '')
-                if len(desc)>0:
-                    diary = Diary(id=id, D_desc=desc)
-                    diary.save()
-                    return redirect("notebook")
-                if 1:
-                    playsound.playsound("notebook1.mp3")
-                    r = sr.Recognizer()
-                    with  sr.Microphone() as source:
-                        playsound.playsound("listening1.mp3")
-                        print("Listening......")
-                        r.energy_threshold = 1500
-                        r.pause_threshold = 1
-                        audio = r.listen(source)
-                        print('done')
-                        playsound.playsound("done.mp3")
-                        global nn
-                        nn = 0
-                    try:
-                        print("Recognizing......")
-                        query = r.recognize_google(audio, language = 'en-in')
-                        print(f"User said: {query}\n")
-                        tts = gTTS(f"User said:  {query}\n")
-                        filename = "voice.mp3"
-                        tts.save(filename)
-                        playsound.playsound(filename)
-                        os.remove(filename)
-                        diary = Diary(id=request.user.id, D_desc=query)
-                        diary.save()
-                    except Exception as e:
-                        print(e)
-                        if nn < 3:
-                            nn+=1
-                            print("Say that again please......")
-                            playsound.playsound("sayagain.mp3")
-                            return redirect("auxiliary_notebook")
-                        else:
-                            playsound.playsound("conprob.mp3")
-                            return HttpResponse("Thank You...")
-                    nn = 0
-                    return HttpResponse(json.dumps(query))
-            else:
+            if 1:
                 aa += 1
                 diary = Diary.objects.filter(id = request.user.id)
                 stories = diary.values('D_desc', 'date', 'D_id')

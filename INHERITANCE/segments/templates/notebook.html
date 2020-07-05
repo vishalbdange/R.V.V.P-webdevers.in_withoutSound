@@ -26,14 +26,13 @@
     <div class="jumbotron mt-5 border border-warning ">
         <div class="container">
             <h1 class="display-4 font-weight-bolder text-warning ">My Diary</h1>
-            <p class="lead text-warning ">Hello!, Please speak what you wanna save.</p>
         </div>
     </div>
 </div>
 <div class="container">
     <div class="jumbotron mt-5 border border-warning ">
         <div class="container">
-            <h4 class=" font-weight-bolder text-warning ">You May Also Write Here...</h4>
+            <h4 class=" font-weight-bolder text-warning ">Write Here What You Wanna Save...</h4>
             <form action="/diary" method="POST"> {% csrf_token %}
                 <input type="text" name="text">
                 <button type="submit" class="mt-2 btn btn-outline-warning"> Save </button>
